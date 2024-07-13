@@ -4,6 +4,7 @@ import jakarta.websocket.Encoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -203,6 +204,8 @@ public class Posts {
     public void setMax_count(int max_count) {
         this.max_count = max_count;
     }
+
+
 
     public String getImage() {
         return image;

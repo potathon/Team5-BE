@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Particpants")
 public class Particpants{
-    public String getParticpantId() {
-        return particpantId;
+    public String id() {
+        return id;
     }
 
-    public void setParticpantId(String particpantId) {
-        this.particpantId = particpantId;
+    public void id(String id) {
+        this.id = id;
     }
 
     public int getPostId() {
@@ -78,7 +78,7 @@ public class Particpants{
 
     @Id
     @Column(name = "particpantid" ,nullable = false, unique = true)
-    private String particpantId;
+    private String id;
 
     @Column(name = "postid" ,nullable = false)
     private int postId;
@@ -88,6 +88,22 @@ public class Particpants{
 
     @Column(name = "user_name", nullable = false)
     private String userName;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     @Column(name = "user_phone", nullable = false)
     private String userPhone;
@@ -101,6 +117,8 @@ public class Particpants{
     @Column(name = "deleted_at")
     private LocalDateTime deleted_at;
 
+    @Column(name = "status")
+    private String status;
 
 
 

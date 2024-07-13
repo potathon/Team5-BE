@@ -63,6 +63,5 @@ public class PostService {
     }
 
     public void modifyPost(Posts post){
-        postRepository.updatePost(post);
     }
 }

@@ -4,19 +4,19 @@ import TEAM5.roomie.Dto.UsersDTO;
 import TEAM5.roomie.Model.Users;
 import TEAM5.roomie.Repository.UserRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
 
+    @Autowired
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public List<Users> getAllUsers() {
         return userRepository.findAll();
@@ -26,19 +26,19 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public Users createUser(@Valid UsersDTO usersDTO, Long post_id) {
-        if (isUserExists(usersDTO.getUser_name(), usersDTO.getPhone())) {
+    public Users createUser(@Valid UsersDTO usersDTO, Long postId) {
+        if (isUserExists(usersDTO.getUserName(), usersDTO.getPhone())) {
             throw new IllegalArgumentException("User already exists");
         }
         Users user = convertToEntity(usersDTO);
-        user.setPost_id(post_id);
+        user.setPostId(postId);
         return userRepository.save(user);
     }
 
     public Users updateUser(Long id, @Valid UsersDTO userDetails) {
         Users user = userRepository.findById(id).orElse(null);
         if (user != null) {
-            user.setUser_name(userDetails.getUser_name());
+            user.setUserName(userDetails.getUserName());
             user.setPhone(userDetails.getPhone());
             return userRepository.save(user);
         }
@@ -49,19 +49,19 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public List<Users> getUsersByPostId(Long post_id) {
-        return userRepository.findByPost_id(post_id);
+    public List<Users> getUsersByPostId(Long postId) {
+        return userRepository.findByPostId(postId);
     }
 
     private Users convertToEntity(UsersDTO usersDTO) {
         Users user = new Users();
-        user.setUser_name(usersDTO.getUser_name());
+        user.setUserName(usersDTO.getUserName());
         user.setPhone(usersDTO.getPhone());
         return user;
     }
 
-    private boolean isUserExists(String user_name, String phone) {
-        Optional<Users> existingUser = Optional.ofNullable(userRepository.findByUser_nameAndPhone(user_name, phone));
+    private boolean isUserExists(String userName, String phone) {
+        Optional<Users> existingUser = Optional.ofNullable(userRepository.findByUserNameAndPhone(userName, phone));
         return existingUser.isPresent();
     }
 }

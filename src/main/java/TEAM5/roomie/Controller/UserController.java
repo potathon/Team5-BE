@@ -1,6 +1,6 @@
 package TEAM5.roomie.Controller;
 
-import TEAM5.roomie.Dto.UserDTO;
+import TEAM5.roomie.Dto.UsersDTO;
 import TEAM5.roomie.Model.Users;
 import TEAM5.roomie.Service.UserService;
 import jakarta.validation.Valid;
@@ -39,14 +39,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Users> createUser(@Valid @RequestBody UserDTO userDTO) {
-        Users createdUser = userService.createUser(userDTO);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    public ResponseEntity<?> createUser(@Valid @RequestBody UsersDTO usersDTO, @RequestParam Long post_id) {
+        try {
+            Users createdUser = userService.createUser(usersDTO, post_id);
+            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Users> updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
-        Users updatedUser = userService.updateUser(id, userDTO);
+    public ResponseEntity<Users> updateUser(@PathVariable Long id, @Valid @RequestBody UsersDTO usersDTO) {
+        Users updatedUser = userService.updateUser(id, usersDTO);
         if (updatedUser != null) {
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } else {

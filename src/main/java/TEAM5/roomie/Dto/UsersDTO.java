@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UserDTO {
+public class UsersDTO {
     private Long id;
 
     @NotBlank(message = "Username is mandatory")

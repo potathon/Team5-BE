@@ -3,6 +3,7 @@ package TEAM5.roomie.Controller;
 import TEAM5.roomie.Dto.PostsDTO;
 import TEAM5.roomie.Dto.UsersDTO;
 import TEAM5.roomie.Model.Posts;
+import TEAM5.roomie.Model.Users;
 import TEAM5.roomie.Service.PostService;
 import TEAM5.roomie.Service.UserService;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
+@RequestMapping("/posts")
 public class PostController {
     @Autowired
     private final PostService postService;
@@ -22,7 +24,7 @@ public class PostController {
     @Autowired
     private final UserService userService;
 
-    @PostMapping("/post")
+    @PostMapping
     public ResponseEntity<?> post(@ModelAttribute PostsDTO postRequest) {
         MultipartFile image = postRequest.getImage() != null ? postRequest.getImage() : null;
         try {
@@ -44,37 +46,46 @@ public class PostController {
         }
     }
 
-    @GetMapping("/getAllPosts")
-    public List<Posts> getAllPosts(){
-
+    @GetMapping
+    public List<Posts> getAllPosts() {
         return postService.findAllPosts();
-
     } // 게시글 전체 조회
-    @GetMapping("/laundryPosts")
-    public List<Posts> getLaundryPosts(){
 
+    @GetMapping("/laundry")
+    public List<Posts> getLaundryPosts() {
         return postService.findLaundryPosts();
-
     } // 태그가 laundry인 것들을 리스트 형태로 반환
 
-    @GetMapping("/groupBuyPosts")
-    public List<Posts> getGroupByPosts(){
-
+    @GetMapping("/Buy")
+    public List<Posts> getGroupBuyPosts() {
         return postService.findGroupBuyPosts();
-
     } // 태그가 groupBuyPosts인 것들을 리스트 형태로 변환
 
-    @PostMapping("/post/{postId}")
-    public ResponseEntity<?> joinGroup(@RequestBody UsersDTO joinGroupRequest) {
+    @PostMapping("/{post_id}/join")
+    public ResponseEntity<?> joinGroup(@PathVariable Long post_id, @RequestBody UsersDTO joinGroupRequest) {
         try {
-            userService.joinGroup(
-                    joinGroupRequest.getUserName(),
-                    joinGroupRequest.getUserPhone()
-            );
-            return ResponseEntity.status(201).body("add_group_success");
+            userService.createUser(joinGroupRequest, post_id);
+            return ResponseEntity.status(201).body("User added successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(400).body("Failed to join group: " + e.getMessage());
         }
     }
 
+    @GetMapping("/{post_id}/users")
+    public ResponseEntity<List<Users>> getUsersByPostId(@PathVariable Long post_id) {
+        List<Users> users = userService.getUsersByPostId(post_id);
+        return ResponseEntity.status(200).body(users);
+    }
+
+    @DeleteMapping("/{post_id}/users/{userId}")
+    public ResponseEntity<?> cancelParticipation(@PathVariable Long post_id, @PathVariable Long userId) {
+        try {
+            userService.deleteUser(userId);
+            return ResponseEntity.status(200).body("User removed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Failed to remove user: " + e.getMessage());
+        }
+    }
 }

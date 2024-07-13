@@ -101,6 +101,4 @@ public class PostController {
         postService.modifyPost(post);
         return ResponseEntity.ok("Post Update Success");
     }
-
-
 }

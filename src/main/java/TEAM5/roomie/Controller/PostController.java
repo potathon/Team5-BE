@@ -79,10 +79,10 @@ public class PostController {
         return ResponseEntity.status(200).body(users);
     }
 
-    @DeleteMapping("/{post_id}/users/{userId}")
-    public ResponseEntity<?> cancelParticipation(@PathVariable Long post_id, @PathVariable Long userId) {
+    @DeleteMapping("/{post_id}/users/{user_id}")
+    public ResponseEntity<?> cancelParticipation(@PathVariable Long post_id, @PathVariable Long user_id) {
         try {
-            userService.deleteUser(userId);
+            userService.deleteUser(user_id);
             return ResponseEntity.status(200).body("User removed successfully");
         } catch (Exception e) {
             return ResponseEntity.status(400).body("Failed to remove user: " + e.getMessage());

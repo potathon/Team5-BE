@@ -1,15 +1,12 @@
 package TEAM5.roomie.Controller;
 
 
-import TEAM5.roomie.Dto.PostsDTO;
 import TEAM5.roomie.Model.Posts;
 import TEAM5.roomie.Service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -32,12 +29,10 @@ public class PostController {
     }
 
     @PostMapping
-    ResponseEntity<?> createPost(@RequestBody Posts post, @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
-        if (!image.isEmpty()) {
-            postService.savePostWithImage(post, image);
-        } else {
-            postService.savePost(post);
-        }
+    ResponseEntity<?> createPost(@RequestBody Posts post) {
+
+        postService.savePost(post);
+
         return ResponseEntity.ok("Post Create Success");
     }
 

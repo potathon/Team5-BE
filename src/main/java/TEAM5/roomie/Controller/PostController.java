@@ -1,12 +1,15 @@
 package TEAM5.roomie.Controller;
 
 
+import TEAM5.roomie.Dto.PostsDTO;
 import TEAM5.roomie.Model.Posts;
 import TEAM5.roomie.Service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,20 +25,30 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/")
+    @GetMapping
     ResponseEntity<?> allPost() {
         List<Posts> postList = postService.getAllPosts();
         return ResponseEntity.ok(postList);
     }
 
+    @PostMapping
+    ResponseEntity<?> createPost(@RequestBody Posts post, @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+        if (!image.isEmpty()) {
+            postService.savePostWithImage(post, image);
+        } else {
+            postService.savePost(post);
+        }
+        return ResponseEntity.ok("Post Create Success");
+    }
+
     @DeleteMapping("/{postId}")
-    ResponseEntity<?> deletePost(@PathVariable int postId){
+    ResponseEntity<?> deletePost(@PathVariable int postId) {
         postService.deletePost(postId);
         return ResponseEntity.ok("Post Delete Success");
     }
 
     @PutMapping("/{postId}")
-    ResponseEntity<?> updatePost(@PathVariable int postId, @RequestBody Posts post){
+    ResponseEntity<?> updatePost(@PathVariable int postId, @RequestBody Posts post) {
         post.setId(postId);
         postService.modifyPost(post);
         return ResponseEntity.ok("Post Update Success");

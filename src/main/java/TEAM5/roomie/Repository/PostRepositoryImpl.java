@@ -23,7 +23,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     @Override
     public void updatePost(Posts post) {
         String sql = "UPDATE posts SET user_name=?, user_phone=?, title=?, content=?, meet_place=?, meet_time=?, max_count=?, user_count=?, tag=?, image=?, updated_at=? WHERE id=?";
-        jdbcTemplate.update(sql, post.getUserName(), post.getUserPhone(), post.getTitle(), post.getContent(), post.getMeetPlace(), post.getMeetTime(), post.getMaxCount(), post.getUserCount(), post.getTag(), post.getImage(), post.getUpdatedAt(), post.getId());
+        jdbcTemplate.update(sql, post.getUser_name(), post.getUser_phone(), post.getTitle(), post.getContent(), post.getMeet_place(), post.getMeet_time(), post.getMax_count(), post.getUser_count(), post.getTag(), post.getImage(), post.getUpdated_at(), post.getId());
     }
 
 

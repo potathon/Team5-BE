@@ -5,50 +5,56 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+import java.time.LocalDateTime;
+
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "posts")
-@Data
 public class Posts {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
 
-    @Column(name = "user_name")
+    @Column(name = "user_name", nullable = false)
     private String user_name;
 
-    @Column(name = "user_phone")
+    @Column(name = "user_phone", nullable = false)
     private String user_phone;
 
+    @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "meet_place")
+    @Column(name = "meet_place", nullable = false)
     private String meet_place;
 
-    @Column(name = "meet_time")
+    @Column(name = "meet_time", nullable = false)
     private String meet_time;
 
-    @Column(name = "max_count")
-    private int max_count;
-
-    @Column(name = "user_count")
+    @Column(name = "user_count", nullable = false)
     private int user_count;
 
+    @Column(name = "max_count", nullable = false)
+    private int max_count;
+
+    @Column(name = "tag", nullable = false)
     private String tag;
 
-    @Lob
-    private byte[] image;
-
-    @Column(name = "created_at")
-    private String created_at;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime create_at;
 
     @Column(name = "updated_at")
-    private String updated_at;
+    private LocalDateTime updated_at;
 
     @Column(name = "deleted_at")
-    private String deleted_at;
+    private LocalDateTime deleted_at;
 
+    @Column(name = "image")
+    private String image;
 }

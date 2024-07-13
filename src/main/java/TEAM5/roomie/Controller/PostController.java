@@ -79,13 +79,26 @@ public class PostController {
         return ResponseEntity.status(200).body(users);
     }
 
-    @DeleteMapping("/{post_id}/users/{userId}")
-    public ResponseEntity<?> cancelParticipation(@PathVariable Long post_id, @PathVariable Long userId) {
+    @DeleteMapping("/{post_id}/users/{user_id}")
+    public ResponseEntity<?> cancelParticipation(@PathVariable Long post_id, @PathVariable Long user_id) {
         try {
-            userService.deleteUser(userId);
+            userService.deleteUser(user_id);
             return ResponseEntity.status(200).body("User removed successfully");
         } catch (Exception e) {
             return ResponseEntity.status(400).body("Failed to remove user: " + e.getMessage());
         }
+    }
+
+    @DeleteMapping("/{post_id}")
+    public ResponseEntity<?> deletePost(@PathVariable int post_id) {
+        postService.deletePost(post_id);
+        return ResponseEntity.ok("Post Delete Success");
+    }
+
+    @PutMapping("/{post_id}")
+    public ResponseEntity<?> updatePost(@PathVariable Long post_id, @RequestBody Posts post) {
+        post.setId(post_id);
+        postService.modifyPost(post);
+        return ResponseEntity.ok("Post Update Success");
     }
 }

@@ -9,8 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,4 +58,11 @@ public class PostService {
         return postRepository.findByTag("groupBuyPosts");
     }
 
+    public void deletePost(int id){
+        postRepository.deleteById(id);
+    }
+
+    public void modifyPost(Posts post){
+        postRepository.updatePost(post);
+    }
 }

@@ -88,4 +88,19 @@ public class PostController {
             return ResponseEntity.status(400).body("Failed to remove user: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/{post_id}")
+    public ResponseEntity<?> deletePost(@PathVariable int post_id) {
+        postService.deletePost(post_id);
+        return ResponseEntity.ok("Post Delete Success");
+    }
+
+    @PutMapping("/{post_id}")
+    public ResponseEntity<?> updatePost(@PathVariable Long post_id, @RequestBody Posts post) {
+        post.setId(post_id);
+        postService.modifyPost(post);
+        return ResponseEntity.ok("Post Update Success");
+    }
+
+
 }

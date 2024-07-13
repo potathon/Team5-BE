@@ -3,7 +3,6 @@ package TEAM5.roomie.Repository;
 import TEAM5.roomie.Model.Posts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,11 +13,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Override
-    public Posts test() {
-        String sql = "SELECT * FROM posts WHERE id=7";
-        return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Posts.class));
-    }
 
     @Override
     public void updatePost(Posts post) {

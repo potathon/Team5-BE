@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface PostRepository extends JpaRepository<Posts, Long> {
-
-    List<Posts> findByTag(String tag);
+public interface PostRepository extends JpaRepository<Posts, Integer> {
+    List<Posts> findByTag(String groupBuyPosts);
 }

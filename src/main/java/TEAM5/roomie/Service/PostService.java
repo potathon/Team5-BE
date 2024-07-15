@@ -23,8 +23,11 @@ public class PostService {
     @Autowired
     private final PostRepository postRepository;
 
-    public Posts writePost(@Valid Posts postRequest, MultipartFile photo) throws IOException {
-        if (!photo.isEmpty()) {
+
+    public Posts writePost(String title, String user_name, String user_phone, String tag, String meet_time, String meet_place, int max_count, MultipartFile photo, String content) throws IOException {
+        Posts posts = new Posts();
+
+        if(photo != null && !photo.isEmpty()){
             String fileName = photo.getOriginalFilename();
             File dest = new File(uploadDir + '/' + fileName);
             photo.transferTo(dest);
@@ -49,8 +52,8 @@ public class PostService {
         return postRepository.findByTag("laundry");
     }
 
-    public List<Posts> findGroupBuyPosts() {
-        return postRepository.findByTag("groupBuyPosts");
+    public List<Posts> findGroupBuyPosts(){
+        return postRepository.findByTag("buy");
     }
 
     public void deletePost(Long id) {

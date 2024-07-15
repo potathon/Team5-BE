@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Builder;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.*;
 
 @Data
 @NoArgsConstructor

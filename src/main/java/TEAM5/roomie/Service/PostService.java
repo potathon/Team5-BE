@@ -2,6 +2,7 @@ package TEAM5.roomie.Service;
 
 import TEAM5.roomie.Model.Posts;
 import TEAM5.roomie.Repository.PostRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,36 +23,32 @@ public class PostService {
     @Autowired
     private final PostRepository postRepository;
 
+
     public Posts writePost(String title, String user_name, String user_phone, String tag, String meet_time, String meet_place, int max_count, MultipartFile photo, String content) throws IOException {
         Posts posts = new Posts();
 
         if(photo != null && !photo.isEmpty()){
             String fileName = photo.getOriginalFilename();
-            File dest = new File( uploadDir + '/' + fileName);
+            File dest = new File(uploadDir + '/' + fileName);
             photo.transferTo(dest);
             String filePath2 = "images/" + fileName;
-            posts.setImage(filePath2);
+            postRequest.setImage(filePath2);
         }
 
+        postRequest.setCreate_at(LocalDateTime.now());
+        LocalDateTime meetTime = LocalDateTime.parse(postRequest.getMeet_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if (meetTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Meet time cannot be in the past");
+        }
 
-        posts.setTitle(title);
-        posts.setUser_name(user_name);
-        posts.setUser_phone(user_phone);
-        posts.setTag(tag);
-        posts.setMeet_time(meet_time);
-        posts.setMeet_place(meet_place);
-        posts.setMax_count(max_count);
-        posts.setContent(content);
-        posts.setCreate_at(LocalDateTime.now());
-
-
-        return postRepository.save(posts);
+        return postRepository.save(postRequest);
     }
 
-    public List<Posts> findAllPosts(){
+    public List<Posts> findAllPosts() {
         return postRepository.findAll();
     }
-    public List<Posts> findLaundryPosts(){
+
+    public List<Posts> findLaundryPosts() {
         return postRepository.findByTag("laundry");
     }
 
@@ -58,10 +56,28 @@ public class PostService {
         return postRepository.findByTag("buy");
     }
 
-    public void deletePost(int id){
+    public void deletePost(Long id) {
         postRepository.deleteById(id);
     }
 
-    public void modifyPost(Posts post){
+    public Posts modifyPost(Long post_id, @Valid Posts postRequest) {
+        Posts existingPost = postRepository.findById(post_id).orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
+        LocalDateTime meetTime = LocalDateTime.parse(postRequest.getMeet_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if (meetTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Meet time cannot be in the past");
+        }
+
+        existingPost.setTitle(postRequest.getTitle());
+        existingPost.setUser_name(postRequest.getUser_name());
+        existingPost.setUser_phone(postRequest.getUser_phone());
+        existingPost.setTag(postRequest.getTag());
+        existingPost.setMeet_time(postRequest.getMeet_time());
+        existingPost.setMeet_place(postRequest.getMeet_place());
+        existingPost.setMax_count(postRequest.getMax_count());
+        existingPost.setContent(postRequest.getContent());
+        existingPost.setUpdated_at(LocalDateTime.now());
+
+        return postRepository.save(existingPost);
     }
 }

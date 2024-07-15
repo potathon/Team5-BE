@@ -49,17 +49,17 @@ public class PostController {
     @GetMapping
     public List<Posts> getAllPosts() {
         return postService.findAllPosts();
-    } // 게시글 전체 조회
+    }
 
     @GetMapping("/laundry")
     public List<Posts> getLaundryPosts() {
         return postService.findLaundryPosts();
-    } // 태그가 laundry인 것들을 리스트 형태로 반환
+    }
 
     @GetMapping("/buy")
     public List<Posts> getGroupBuyPosts() {
         return postService.findGroupBuyPosts();
-    } // 태그가 groupBuyPosts인 것들을 리스트 형태로 변환
+    }
 
     @PostMapping("/{post_id}/join")
     public ResponseEntity<?> joinGroup(@PathVariable Long post_id, @RequestBody UsersDTO usersDTO) {
@@ -91,18 +91,28 @@ public class PostController {
         }
     }
 
-    @DeleteMapping("/{post_id}")
-    public ResponseEntity<?> deletePost(@PathVariable int post_id) {
-        postService.deletePost(post_id);
-        return ResponseEntity.ok("Post Delete Success");
-    }
-
     @PutMapping("/{post_id}")
-    public ResponseEntity<?> updatePost(@PathVariable Long post_id, @RequestBody Posts post) {
-        post.setId(post_id);
-        postService.modifyPost(post);
-        return ResponseEntity.ok("Post Update Success");
+    public ResponseEntity<?> updatePost(@PathVariable Long post_id, @ModelAttribute PostsDTO postRequest) {
+        try {
+            Posts updatedPost = postService.modifyPost(post_id, convertToEntity(postRequest));
+            return ResponseEntity.status(200).body(updatedPost);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Failed to update post: " + e.getMessage());
+        }
     }
 
-
+    private Posts convertToEntity(PostsDTO postRequest) {
+        Posts post = new Posts();
+        post.setTitle(postRequest.getTitle());
+        post.setUser_name(postRequest.getUser_name());
+        post.setUser_phone(postRequest.getUser_phone());
+        post.setTag(postRequest.getTag());
+        post.setMeet_time(postRequest.getMeet_time());
+        post.setMeet_place(postRequest.getMeet_place());
+        post.setMax_count(postRequest.getMax_count());
+        post.setContent(postRequest.getContent());
+        return post;
+    }
 }

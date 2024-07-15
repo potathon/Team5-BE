@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Posts, Integer> {
     List<Posts> findByTag(String groupBuyPosts);
-
 }

@@ -24,7 +24,7 @@ public class PostService {
     public Posts writePost(String title, String user_name, String user_phone, String tag, String meet_time, String meet_place, int max_count, MultipartFile photo, String content) throws IOException {
         Posts posts = new Posts();
 
-        if(!photo.isEmpty()){
+        if(photo != null && !photo.isEmpty()){
             String fileName = photo.getOriginalFilename();
             File dest = new File( uploadDir + '/' + fileName);
             photo.transferTo(dest);
@@ -55,7 +55,7 @@ public class PostService {
     }
 
     public List<Posts> findGroupBuyPosts(){
-        return postRepository.findByTag("groupBuyPosts");
+        return postRepository.findByTag("buy");
     }
 
     public void deletePost(int id){

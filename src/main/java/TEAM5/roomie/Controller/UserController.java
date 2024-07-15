@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @Validated
 public class UserController {
 
@@ -41,8 +41,8 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody UsersDTO usersDTO, @RequestParam Long post_id) {
         try {
-            Users createdUser = userService.createUser(usersDTO, post_id);
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+            userService.createUser(usersDTO, post_id);
+            return ResponseEntity.ok("join success");
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

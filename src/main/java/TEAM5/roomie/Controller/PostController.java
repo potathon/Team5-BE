@@ -56,15 +56,17 @@ public class PostController {
         return postService.findLaundryPosts();
     } // 태그가 laundry인 것들을 리스트 형태로 반환
 
-    @GetMapping("/Buy")
+    @GetMapping("/buy")
     public List<Posts> getGroupBuyPosts() {
         return postService.findGroupBuyPosts();
     } // 태그가 groupBuyPosts인 것들을 리스트 형태로 변환
 
     @PostMapping("/{post_id}/join")
-    public ResponseEntity<?> joinGroup(@PathVariable Long post_id, @RequestBody UsersDTO joinGroupRequest) {
+    public ResponseEntity<?> joinGroup(@PathVariable Long post_id, @RequestBody UsersDTO usersDTO) {
         try {
-            userService.createUser(joinGroupRequest, post_id);
+            userService.createUser(usersDTO, post_id);
+
+
             return ResponseEntity.status(201).body("User added successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body(e.getMessage());

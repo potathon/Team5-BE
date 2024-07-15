@@ -1,8 +1,11 @@
 package TEAM5.roomie.Service;
 
 import TEAM5.roomie.Dto.UsersDTO;
+import TEAM5.roomie.Model.Posts;
 import TEAM5.roomie.Model.Users;
+import TEAM5.roomie.Repository.PostRepository;
 import TEAM5.roomie.Repository.UserRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,8 @@ public class UserService {
     @Autowired
     private final UserRepository userRepository;
 
+    private final PostRepository postRepository;
+
     public List<Users> getAllUsers() {
         return userRepository.findAll();
     }
@@ -26,19 +31,27 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public Users createUser(@Valid UsersDTO usersDTO, Long postId) {
-        if (isUserExists(usersDTO.getUserName(), usersDTO.getPhone())) {
+    @Transactional
+    public Users createUser(@Valid UsersDTO usersDTO, Long post_id) {
+        if (isUserExists(usersDTO.getUser_name(), usersDTO.getPhone())) {
             throw new IllegalArgumentException("User already exists");
         }
+
+        Posts post = postRepository.findById(Math.toIntExact(post_id)).orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
         Users user = convertToEntity(usersDTO);
-        user.setPostId(postId);
+        user.setPostId(post.getId());
+
+        post.setUser_count(post.getUser_count() + 1);
+        postRepository.save(post);
+
         return userRepository.save(user);
     }
 
     public Users updateUser(Long id, @Valid UsersDTO userDetails) {
         Users user = userRepository.findById(id).orElse(null);
         if (user != null) {
-            user.setUserName(userDetails.getUserName());
+            user.setUserName(userDetails.getUser_name());
             user.setPhone(userDetails.getPhone());
             return userRepository.save(user);
         }
@@ -55,7 +68,7 @@ public class UserService {
 
     private Users convertToEntity(UsersDTO usersDTO) {
         Users user = new Users();
-        user.setUserName(usersDTO.getUserName());
+        user.setUserName(usersDTO.getUser_name());
         user.setPhone(usersDTO.getPhone());
         return user;
     }

@@ -65,8 +65,6 @@ public class PostController {
     public ResponseEntity<?> joinGroup(@PathVariable Long post_id, @RequestBody UsersDTO usersDTO) {
         try {
             userService.createUser(usersDTO, post_id);
-
-
             return ResponseEntity.status(201).body("User added successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body(e.getMessage());
@@ -81,20 +79,29 @@ public class PostController {
         return ResponseEntity.status(200).body(users);
     }
 
-    @DeleteMapping("/{post_id}/users/{user_id}")
-    public ResponseEntity<?> cancelParticipation(@PathVariable Long post_id, @PathVariable Long user_id) {
+    @DeleteMapping("/{post_id}/delete")
+    public ResponseEntity<?> deletePost(@PathVariable Long post_id, @RequestParam String user_name, @RequestParam String phone) {
         try {
-            userService.deleteUser(user_id);
-            return ResponseEntity.status(200).body("User removed successfully");
+            // 작성자가 맞는지 확인
+            Posts post = postService.findById(post_id).orElseThrow(() -> new IllegalArgumentException("Post not found"));
+            if (post.getUser_name().equals(user_name) && post.getUser_phone().equals(phone)) {
+                userService.deletePost(post_id);
+                return ResponseEntity.status(200).body("Post deleted successfully");
+            } else {
+                return ResponseEntity.status(403).body("Unauthorized to delete this post");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(400).body("Failed to remove user: " + e.getMessage());
+            return ResponseEntity.status(400).body("Failed to delete post: " + e.getMessage());
         }
     }
 
+
     @PutMapping("/{post_id}")
-    public ResponseEntity<?> updatePost(@PathVariable Long post_id, @ModelAttribute PostsDTO postRequest) {
+    public ResponseEntity<?> updatePost(@PathVariable Long post_id, @RequestBody Posts postRequest) {
         try {
-            Posts updatedPost = postService.modifyPost(post_id, convertToEntity(postRequest));
+            Posts updatedPost = postService.modifyPost(post_id, postRequest);
             return ResponseEntity.status(200).body(updatedPost);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body(e.getMessage());
@@ -102,6 +109,19 @@ public class PostController {
             return ResponseEntity.status(400).body("Failed to update post: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/{post_id}/users/cancel")
+    public ResponseEntity<?> cancelParticipation(@PathVariable Long post_id, @RequestParam String user_name, @RequestParam String phone) {
+        try {
+            userService.cancelParticipation(post_id, user_name, phone);
+            return ResponseEntity.status(200).body("User removed successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Failed to remove user: " + e.getMessage());
+        }
+    }
+
 
     private Posts convertToEntity(PostsDTO postRequest) {
         Posts post = new Posts();

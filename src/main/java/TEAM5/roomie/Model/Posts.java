@@ -1,10 +1,7 @@
 package TEAM5.roomie.Model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -67,6 +64,11 @@ public class Posts {
     @Column(name = "deleted_at")
     private LocalDateTime deleted_at;
 
-    @Column(name = "image")
+    @Column(name = "image", nullable = true)
     private String image;
+
+    @AssertTrue(message = "User count cannot exceed max count")
+    public boolean isUserCountValid() {
+        return user_count <= max_count;
+    }
 }

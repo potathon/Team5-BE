@@ -10,10 +10,8 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-//@EqualsAndHashCode(of = {"id"})
-//@Builder(toBuilder = true)
 @Table(name = "users")
-public class Users {
+public class Users extends @Valid UsersDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,5 +24,6 @@ public class Users {
 
     @Column(name = "phone")
     private String phone;
+
 
 }

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -32,16 +34,26 @@ public class PostService {
             File dest = new File(uploadDir + '/' + fileName);
             photo.transferTo(dest);
             String filePath2 = "images/" + fileName;
-            postRequest.setImage(filePath2);
+            posts.setImage(filePath2);
         }
 
-        postRequest.setCreate_at(LocalDateTime.now());
-        LocalDateTime meetTime = LocalDateTime.parse(postRequest.getMeet_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        posts.setTitle(title);
+        posts.setUser_name(user_name);
+        posts.setUser_phone(user_phone);
+        posts.setTag(tag);
+        posts.setMeet_time(meet_time);
+        posts.setMeet_place(meet_place);
+        posts.setMax_count(max_count);
+        posts.setContent(content);
+        posts.setCreate_at(LocalDateTime.now());
+        posts.setUser_count(0); // 초기 사용자 수 설정
+
+        LocalDateTime meetTime = LocalDateTime.parse(meet_time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         if (meetTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Meet time cannot be in the past");
         }
 
-        return postRepository.save(postRequest);
+        return postRepository.save(posts);
     }
 
     public List<Posts> findAllPosts() {
@@ -56,13 +68,30 @@ public class PostService {
         return postRepository.findByTag("buy");
     }
 
-    public void deletePost(Long id) {
-        postRepository.deleteById(id);
+    public Optional<Posts> findById(Long postId) {
+        return postRepository.findById(postId);
     }
 
-    public Posts modifyPost(Long post_id, @Valid Posts postRequest) {
-        Posts existingPost = postRepository.findById(post_id).orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
+    @Transactional
+    public void deletePostIfAuthorized(Long postId, String userName, String phone) {
+        Posts post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
+        if (post.getUser_name().equals(userName) && post.getUser_phone().equals(phone)) {
+            postRepository.delete(post);
+        } else {
+            throw new IllegalArgumentException("Unauthorized user");
+        }
+    }
+
+    @Transactional
+    public Posts modifyPost(Long postId, @Valid Posts postRequest) {
+        Posts existingPost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Post not found"));
+        updatePostDetails(existingPost, postRequest);
+        return postRepository.save(existingPost);
+    }
+
+    private void updatePostDetails(Posts existingPost, Posts postRequest) {
         LocalDateTime meetTime = LocalDateTime.parse(postRequest.getMeet_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         if (meetTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Meet time cannot be in the past");
@@ -77,7 +106,5 @@ public class PostService {
         existingPost.setMax_count(postRequest.getMax_count());
         existingPost.setContent(postRequest.getContent());
         existingPost.setUpdated_at(LocalDateTime.now());
-
-        return postRepository.save(existingPost);
     }
 }
